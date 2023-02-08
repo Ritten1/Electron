@@ -12,12 +12,20 @@
     <title>Hello World!</title>
   </head>
   <body>
-    <span id="loading"> </span>
-    <webview
-      src="http://www.baidu.com/"
-      id="wb"
-      preload="./webview_test/preload"
-    ></webview>
+    <div>
+      <h2>弹出子窗口</h2>
+      <button id="openbtn">弹出</button>
+      <button id="closebtn">关闭子窗口</button>
+    </div>
+
+    <!-- <div>
+      <span id="loading"> </span>
+      <webview
+        src="http://www.baidu.com/"
+        id="wb"
+        preload="./webview_test/preload"
+      ></webview>
+    </div> -->
 
     <!-- 可以draggable="true" 或者在事件监听里增加阻止默认事件的方法   -->
     <div class="dragfile" id="drag">
