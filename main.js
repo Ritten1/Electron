@@ -10,6 +10,7 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true, //用户的require和process等变量的使用需要事先设定上这个属性
+      webviewTag: true,
       contextIsolation: false,
     },
   });

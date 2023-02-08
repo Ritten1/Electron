@@ -20,6 +20,33 @@ function onLoad() {
 
 onLoad();
 
+//webview实例
+const wb = document.querySelector('#wb');
+const loading = document.querySelector('#loading');
+wb.addEventListener('did-start-loading', () => {
+  console.log('did-start-loading');
+  loading.innerHTML = 'loading...';
+});
+wb.addEventListener('did-stop-loading', () => {
+  loading.innerHTML = 'ok';
+  console.log('did-stop-loading');
+  //可以增加css
+  wb.insertCSS(`
+    #su {
+      background:red !important;
+    }
+  `);
+  //执行js
+  wb.executeJavaScript(`
+  setTimeout(() => {
+    alert(document.querySelector('.index-logo-src').src);
+  }, 5000);
+  `);
+  //可以打开嵌入的webview的控制台
+  // wb.openDevTools();
+});
+
+//File对象 实例
 const dragWrapper = document.getElementById('drag');
 
 dragWrapper.addEventListener('drop', (e) => {
