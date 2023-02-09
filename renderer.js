@@ -6,6 +6,11 @@
  * to expose Node.js functionality from the main process.
  */
 const fs = require('fs');
+// const aaa = require('electron');
+// const { contextBridge } = require('electron');
+const { dialog, globalShortcut } = require('@electron/remote');
+
+//可能会遇到dialog is undefined https://blog.csdn.net/qq_56423581/article/details/124785140
 
 function getProcessInfo() {
   //   console.log('getCPUsage', process.getCPUUsage());
@@ -19,19 +24,89 @@ function onLoad() {
 }
 
 onLoad();
-let subWin;
-//弹出新窗口   window.open创建一个新窗口时会返回一个BrowserwindowProxy对象
-function openWindow() {
-  subWin = window.open('popup_page.html', 'baidu');
-}
-const openbtn = document.getElementById('openbtn');
-openbtn.addEventListener('click', () => {
-  openWindow();
+
+globalShortcut.register('CommandOrControl+x', () => {
+  console.log('按下Ctrl+x');
 });
 
-function closeWindow() {
-  subWin.close();
+//Dialog
+
+// contextBridge.exposeInMainWorld('electronApi', {
+//   dialog: require('electron').dialog,
+//   showOpenDialog: require('electron').showOpenDialog,
+// });
+
+const opendialog = document.getElementById('opendialog');
+const savedialog = document.getElementById('savedialog');
+const showMessage = document.getElementById('showMessage');
+
+function openDialog() {
+  dialog
+    .showOpenDialog({
+      title: '选择喜欢的文件',
+      buttonLabel: '保存',
+      filters: [
+        { name: 'Custom File Type', extensions: ['js', 'html', 'json '] },
+      ],
+    })
+    .then((result) => {
+      // filePaths用户选择的文件路径的数组. 如果对话框被取消，这将是一个空的数组
+      console.log(result.filePaths, 'result');
+    });
 }
+function saveDialog() {
+  dialog
+    .showOpenDialog({
+      title: '选择要保存的文件',
+      buttonLabel: '保存',
+      filters: [
+        { name: 'Custom File Type', extensions: ['js', 'html', 'json '] },
+      ],
+    })
+    .then((result) => {
+      console.log(result, 'result');
+      fs.writeFileSync(result, '保存文件测试');
+    });
+}
+function showMessageDialog() {
+  dialog
+    .showMessageBox({
+      type: 'warning',
+      title: '您确定嘛?',
+      message: '您真的要删除这条数据吗',
+      buttons: ['ok', 'cancel'],
+    })
+    .then((result) => {
+      console.log(result, 'result');
+      fs.writeFileSync(result, '保存文件测试');
+    });
+}
+
+opendialog.addEventListener('click', () => {
+  openDialog();
+});
+
+savedialog.addEventListener('click', () => {
+  saveDialog();
+});
+
+showMessage.addEventListener('click', () => {
+  showMessageDialog();
+});
+
+// let subWin;
+// //弹出新窗口   window.open创建一个新窗口时会返回一个BrowserwindowProxy对象
+// function openWindow() {
+//   subWin = window.open('popup_page.html', 'baidu');
+// }
+// const openbtn = document.getElementById('openbtn');
+// openbtn.addEventListener('click', () => {
+//   openWindow();
+// });
+
+// function closeWindow() {
+//   subWin.close();
+// }
 
 //关闭窗口
 const closebtn = document.getElementById('closebtn');

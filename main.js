@@ -1,5 +1,6 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, BrowserView, globalShortcut } = require('electron');
+
 const path = require('path');
 
 function createWindow() {
@@ -7,6 +8,9 @@ function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    // frame:false,//无边框，一般做一些提示性的窗口
+    show: false,
+    enableRemoteModule: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true, //用户的require和process等变量的使用需要事先设定上这个属性
@@ -14,13 +18,45 @@ function createWindow() {
       contextIsolation: false,
     },
   });
-
+  require('@electron/remote/main').initialize(); //初始化
+  require('@electron/remote/main').enable(mainWindow.webContents); //初始化
   mainWindow.webContents.on('did-finish-load', () => {
     console.log('did-finish-load');
   });
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html');
+
+  const view = new BrowserView();
+
+  view.setBounds({
+    x: 10,
+    y: 10,
+    width: 300,
+    height: 200,
+  });
+  // view.webContents.loadURL('https://www.baidu.com');
+  // mainWindow.setBrowserView(view);
+
+  //此方法已不存在
+  // setTimeout(() => {
+  //   view.destroy();
+  // }, [5000]);
+
+  // mainWindow.on('closed', function () {
+  //   mainWindow = null;
+  // });
+  mainWindow.once('ready-to-show', function () {
+    console.log(view, 'viewview');
+    mainWindow.show();
+  });
+
+  // childWin = new BrowserWindow({
+  //   parent: mainWindow,
+  //   modal: true,
+  //   x: 0,
+  //   y: 0,
+  // });
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
@@ -31,6 +67,10 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow();
+  //注册快捷键
+  globalShortcut.register('CommandOrControl+l', () => {
+    console.log('按下Ctrl+L');
+  });
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
@@ -43,6 +83,8 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', function () {
+  //解绑所有热键
+  globalShortcut.unregisterAll();
   if (process.platform !== 'darwin') app.quit();
 });
 
