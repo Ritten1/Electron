@@ -1,5 +1,11 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, BrowserView, globalShortcut } = require('electron');
+const {
+  app,
+  BrowserWindow,
+  BrowserView,
+  globalShortcut,
+  ipcMain,
+} = require('electron');
 
 const path = require('path');
 
@@ -51,6 +57,14 @@ function createWindow() {
     mainWindow.show();
   });
 
+  //主动跟渲染进程说话
+  setTimeout(() => {
+    mainWindow.webContents.send(
+      'send-message-to-render-test',
+      '我也是主进程，主动向渲染进程发消息'
+    );
+  }, 5000);
+
   // childWin = new BrowserWindow({
   //   parent: mainWindow,
   //   modal: true,
@@ -90,3 +104,9 @@ app.on('window-all-closed', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+ipcMain.on('send-message-to-main-test', (event, args) => {
+  console.log('主进程接收到的数据是：', args);
+  //发送到渲染进程
+  event.reply('send-message-to-render-test', '来自于主进程的问候');
+});

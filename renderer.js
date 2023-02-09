@@ -9,6 +9,7 @@ const fs = require('fs');
 // const aaa = require('electron');
 // const { contextBridge } = require('electron');
 const { dialog, globalShortcut } = require('@electron/remote');
+const { ipcRenderer } = require('electron');
 
 //可能会遇到dialog is undefined https://blog.csdn.net/qq_56423581/article/details/124785140
 
@@ -25,6 +26,22 @@ function onLoad() {
 
 onLoad();
 
+//发送信息给主进程
+const sendmessage = document.getElementById('sendmessage');
+
+sendmessage.addEventListener('click', () => {
+  sendMessage();
+});
+
+function sendMessage() {
+  ipcRenderer.send('send-message-to-main-test', '这是来渲染数据');
+}
+//监听主进程
+ipcRenderer.on('send-message-to-render-test', (event, args) => {
+  console.log(args, '渲染进程接收到的数据');
+});
+
+//注册热键
 globalShortcut.register('CommandOrControl+x', () => {
   console.log('按下Ctrl+x');
 });
