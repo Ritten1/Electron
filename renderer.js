@@ -8,7 +8,7 @@
 const fs = require('fs');
 // const aaa = require('electron');
 // const { contextBridge } = require('electron');
-const { dialog, globalShortcut } = require('@electron/remote');
+const { dialog, globalShortcut, Menu, MenuItem } = require('@electron/remote');
 const { ipcRenderer } = require('electron');
 
 //可能会遇到dialog is undefined https://blog.csdn.net/qq_56423581/article/details/124785140
@@ -25,6 +25,51 @@ function onLoad() {
 }
 
 onLoad();
+
+//弹出菜单
+
+const menu = document.getElementById('menu');
+
+menu.addEventListener('click', () => {
+  openMenu();
+});
+
+function openMenu() {
+  const template = [
+    { label: '第一个菜单项目' },
+    {
+      label: '点击测试',
+      click: () => {
+        console.log('触发了点击事件');
+      },
+    },
+    { role: 'undo' },
+    { role: 'redo' },
+    { label: '篮球', type: 'checkbox', checked: true },
+    { label: '乒乓球球', type: 'checkbox', checked: true },
+    { label: '羽毛球', type: 'checkbox', checked: false },
+    //上面为另一种写法，也可以使用new MenuItem
+    new MenuItem({
+      label: '这是menuItem生成的菜单',
+      click: () => {
+        console.log('点击了MenuItem生成的菜单');
+      },
+    }),
+    {
+      label: '子菜单测试',
+      submenu: [
+        { label: '子菜单' },
+        { label: '子菜单2' },
+        { label: '子菜单3' },
+      ],
+    },
+  ];
+  const menu = Menu.buildFromTemplate(template);
+
+  //改变横栏的菜单
+  Menu.setApplicationMenu(menu);
+  menu.popup();
+}
 
 //发送信息给主进程
 const sendmessage = document.getElementById('sendmessage');

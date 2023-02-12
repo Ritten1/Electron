@@ -5,6 +5,7 @@ const {
   BrowserView,
   globalShortcut,
   ipcMain,
+  Menu,
 } = require('electron');
 
 const path = require('path');
@@ -64,6 +65,22 @@ function createWindow() {
       '我也是主进程，主动向渲染进程发消息'
     );
   }, 5000);
+
+  // 主进程很少有需求  弹出菜单
+  // setTimeout(() => {
+  //   const template = [
+  //     { label: '第一个菜单项目' },
+  //     { label: '第二个菜单项目' },
+  //     { role: 'undo' },
+  //     { type: 'separator' },
+  //     { label: '第三个菜单项目' },
+  //     { label: '第四个菜单项目' },
+  //   ];
+  //   const menu = Menu.buildFromTemplate(template);
+
+  //   Menu.setApplicationMenu(menu);
+  //   menu.popup();
+  // }, 5000);
 
   // childWin = new BrowserWindow({
   //   parent: mainWindow,
