@@ -8,7 +8,13 @@
 const fs = require('fs');
 // const aaa = require('electron');
 // const { contextBridge } = require('electron');
-const { dialog, globalShortcut, Menu, MenuItem } = require('@electron/remote');
+const {
+  dialog,
+  globalShortcut,
+  Menu,
+  MenuItem,
+  net,
+} = require('@electron/remote');
 const { ipcRenderer } = require('electron');
 
 //可能会遇到dialog is undefined https://blog.csdn.net/qq_56423581/article/details/124785140
@@ -25,6 +31,27 @@ function onLoad() {
 }
 
 onLoad();
+
+//
+const access = document.getElementById('access');
+access.addEventListener('click', () => {
+  accessTo();
+});
+
+function accessTo() {
+  const request = net.request('https://www.baidu.com');
+  request.on('response', (response) => {
+    console.log(`STATUS: ${response.statusCode}`);
+    console.log(`HEADERS: ${JSON.stringify(response.headers)}`);
+    response.on('data', (chunk) => {
+      console.log(`BODY: ${chunk}`);
+    });
+    request.on('end', () => {
+      console.log('no more data in response');
+    });
+  });
+  request.end();
+}
 
 //弹出菜单
 
